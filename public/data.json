@@ -1,0 +1,42 @@
+{
+    "addresses": [
+      {
+        "id": 1,
+        "name": "서울",
+        "latitude": 37.5665,
+        "longitude": 126.9780
+      },
+      {
+        "id": 2,
+        "name": "부산",
+        "latitude": 35.1796,
+        "longitude": 129.0756
+      },
+      {
+        "id": 3,
+        "name": "대구",
+        "latitude": 35.8714,
+        "longitude": 128.6014
+      },
+
+
+      {
+        "id": 4,
+        "name": "다이소",
+        "latitude": 36.35120, 
+        "longitude": 127.3017
+      },
+      {
+        "id": 5,
+        "name": "내위치",
+        "latitude": 36.352087984022205,
+        "longitude": 127.30028523386005
+      },
+      {
+        "id": 6,
+        "name": "도서관",
+        "latitude": 36.34987,
+        "longitude": 127.2981 
+      }
+    ]
+  }
