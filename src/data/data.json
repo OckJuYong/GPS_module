@@ -1,0 +1,48 @@
+{
+    "addresses": [
+      {
+        "id": 1,
+        "name": "내위치",
+        "latitude": 36.352087984022205,
+        "longitude": 127.30028523386005
+      },
+      {
+        "id": 2,
+        "name": "S1동 도서관",
+        "latitude": 36.35120, 
+        "longitude": 127.3017,
+        "image": "/images/kakao_Img.png"
+      },
+      {
+        "id": 3,
+        "name": "다이소",
+        "latitude": 36.34987,
+        "longitude": 127.2981,
+        "image": "/images/kim.jpg"
+      },
+      {
+        "id": 4,
+        "name": "S2동 아트홀",
+        "latitude": 36.35200,
+        "longitude": 127.3000
+      },
+      {
+        "id": 5,
+        "name": "N5동 대 모비컴",
+        "latitude": 36.35241,
+        "longitude": 127.3018
+      },
+      {
+        "id": 6,
+        "name": "S0동 학생회관",
+        "latitude": 36.35141,
+        "longitude": 127.2997
+      },
+      {
+        "id": 7,
+        "name": "기숙사",
+        "latitude": 36.34573,
+        "longitude": 127.3055
+      }
+    ]
+  }
