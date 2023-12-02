@@ -2,7 +2,10 @@ import './App.css';
 import data from './data/data.json'; // 더미데이터 DB 불러오기
 import { useEffect } from 'react';
 
-
+const myaddress = {
+  latitude: 36.352087984022205,
+  longitude: 127.30028523386005,
+}
 function distance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth radius in kilometers
   const dLat = deg2rad(lat2 - lat1);
@@ -20,8 +23,8 @@ function deg2rad(deg) {
 }
 
 const MyLocation = {
-  latitude: 36.352087984022205,
-  longitude: 127.30028523386005,
+  latitude: myaddress.latitude,
+  longitude: myaddress.longitude,
 };
 
 
@@ -53,7 +56,7 @@ function App() {
         const mapContainer = document.getElementById('map');
         const options = //내 좌표값 설정 (가운데 정렬)
         {
-          center: new kakao.maps.LatLng(36.352087984022205, 127.30028523386005),
+          center: new kakao.maps.LatLng(myaddress.latitude, myaddress.longitude),
           level: 3,
         };
         const map = new kakao.maps.Map(mapContainer, options);
@@ -69,7 +72,7 @@ function App() {
           const markerDistance = distance(MyLocation.latitude, MyLocation.longitude, latitude, longitude);
           // console.log(`Distance to ${name}: ${markerDistance.toFixed(2)} km`);
           // 내위치와 태그위치 거리를 계산하여 내위치가 아니고 태그와 가까울 때 밑의 코드가 실행
-          if (markerDistance.toFixed(2) < 0.05 && name !== "내위치") {
+          if (markerDistance.toFixed(2) < 0.05 && name !== "내위치" && name !== "imsi 내위치") {
             console.log(`${name} 사진을 찍을 수 있습니다.`);
           }
 

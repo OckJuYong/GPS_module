@@ -2,7 +2,7 @@
     "addresses": [
       {
         "id": 1,
-        "name": "내위치",
+        "name": "imsi 내위치",
         "latitude": 36.352087984022205,
         "longitude": 127.30028523386005
       },
@@ -25,6 +25,7 @@
         "name": "S2동 아트홀",
         "latitude": 36.35200,
         "longitude": 127.3000
+        
       },
       {
         "id": 5,
