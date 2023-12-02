@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import data from './data/data.json';
 import quz from './data/qu.json';
+
+const SERVER_ENDPOINT = 'http://localhost:5000/gps';
+const SERVER_CAPCHUR_ENDPOINT = 'http://localhost:5001/capchur-img';
 
 const myaddress = {
   latitude: 36.352087984022205,
@@ -78,65 +80,69 @@ function App() {
   };
 
   useEffect(() => {
-    const randomQuiz = getRandomQuiz();
-    setCurrentQuiz(randomQuiz);
+    const fetchLocationFromServer = async () => {
+      try {
+        const responseLocation = await fetch(SERVER_ENDPOINT);
+        const { wido, gyungdo } = await responseLocation.json();
 
-    const initializeMap = async () => {
-      const kakao = window.kakao;
-      await new_script(
-        'https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=8cd203fb8326a745f18faf8e43268481'
-      );
-
-      kakao.maps.load(() => {
-        const mapContainer = document.getElementById('map');
-        const options = {
-          center: new kakao.maps.LatLng(MyLocation.latitude, MyLocation.longitude),
-          level: 3,
-        };
-        const map = new kakao.maps.Map(mapContainer, options);
-
-        data.addresses.forEach(({ latitude, longitude, name, image }) => {
-          const markerPosition = new kakao.maps.LatLng(latitude, longitude);
-          const markerImage = image ? new kakao.maps.MarkerImage(image, new kakao.maps.Size(50, 50)) : null;
-          const marker = new kakao.maps.Marker({
-            position: markerPosition,
-            title: name,
-            image: markerImage
-          });
-          const markerDistance = distance(MyLocation.latitude, MyLocation.longitude, latitude, longitude);
-
-          if (markerDistance.toFixed(2) < 0.05 && name !== "내위치" && name !== "imsi 내위치") {
-            console.log(`${name} 사진을 찍을 수 있습니다.`);
-            setIsQuizVisible(true);
-          }
-
-          marker.setMap(map);
+        setMyLocation({
+          latitude: wido,
+          longitude: gyungdo,
         });
-      });
-    };
 
-    const updateGPSLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setMyLocation({
-            latitude,
-            longitude,
-          });
-        },
-        (error) => {
-          console.error('Error getting geolocation:', error);
+        const responseCapchur = await fetch(SERVER_CAPCHUR_ENDPOINT);
+        const { result } = await responseCapchur.json();
+
+        if (result === 'yes') {
+          const randomQuiz = getRandomQuiz();
+          setCurrentQuiz(randomQuiz);
+
+          const initializeMap = async () => {
+            const kakao = window.kakao;
+            await new_script(
+              'https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=8cd203fb8326a745f18faf8e43268481'
+            );
+
+            kakao.maps.load(() => {
+              const mapContainer = document.getElementById('map');
+              const options = {
+                center: new kakao.maps.LatLng(MyLocation.latitude, MyLocation.longitude),
+                level: 3,
+              };
+              const map = new kakao.maps.Map(mapContainer, options);
+
+              quz.S2art.forEach(({ latitude, longitude, name, image }) => {
+                const markerPosition = new kakao.maps.LatLng(latitude, longitude);
+                const markerImage = image ? new kakao.maps.MarkerImage(image, new kakao.maps.Size(50, 50)) : null;
+                const marker = new kakao.maps.Marker({
+                  position: markerPosition,
+                  title: name,
+                  image: markerImage
+                });
+                const markerDistance = distance(MyLocation.latitude, MyLocation.longitude, latitude, longitude);
+
+                if (markerDistance.toFixed(2) < 0.05 && name !== "내위치" && name !== "imsi 내위치") {
+                  console.log(`${name} 사진을 찍을 수 있습니다.`);
+                  setIsQuizVisible(true);
+                }
+
+                marker.setMap(map);
+              });
+            });
+
+            initializeMap();
+          }
         }
-      );
+      } catch (error) {
+        console.error('Error fetching data from server:', error);
+      }
     };
 
-    // 최초 한 번 실행
-    updateGPSLocation();
+    // 최초 실행
+    fetchLocationFromServer();
 
     // 주기적으로 위치 업데이트를 위한 setInterval 설정
-    const gpsUpdateInterval = setInterval(updateGPSLocation, 10000);
-
-    initializeMap();
+    const gpsUpdateInterval = setInterval(fetchLocationFromServer, 10000);
 
     return () => clearInterval(gpsUpdateInterval);
   }, [MyLocation.latitude, MyLocation.longitude]);
