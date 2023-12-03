@@ -2,12 +2,22 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import data from './data/data.json';
 import quz from './data/qu.json';
+import gps from './gps.json';
+import question from './predict.json';
+import myImg from './images/my_img.png';
 
+
+// 코드 실행을 위해 바꾼 임시 좌표
+
+// const myaddress = {
+//   latitude: 36.352087984022205,
+//   longitude: 127.30028523386005,
+// };
 
 const myaddress = {
-  latitude: 36.352087984022205,
-  longitude: 127.30028523386005,
-};
+  latitude: gps.latitude,
+  longitude: gps.longitude
+}
 
 function distance(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -26,7 +36,7 @@ function deg2rad(deg) {
 }
 
 function App() {
-  const [result, setResult] = useState(null);
+  
 
   const [userAnswer, setUserAnswer] = useState('');
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
@@ -83,28 +93,6 @@ function App() {
   useEffect(() => {
     const randomQuiz = getRandomQuiz();
     setCurrentQuiz(randomQuiz);
-    const address = async () => {
-      try {
-        const response = await fetch('http://localhost:5001/gps');
-        const address = await response.json();
-        setMyLocation(    
-          address.wido, address.ghyungdo);
-      } catch (error) {
-        console.error('데이터를 가져오는 중 오류 발생:', error);
-        setResult(`오류: ${error.message}`);
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/capture-image');
-        const data = await response.json();
-        setResult(data.result);
-      } catch (error) {
-        console.error('데이터를 가져오는 중 오류 발생:', error);
-        setResult(`오류: ${error.message}`);
-      }
-    };
 
     const initializeMap = async () => {
       const kakao = window.kakao;
@@ -120,6 +108,18 @@ function App() {
         };
         const map = new kakao.maps.Map(mapContainer, options);
 
+        const myMarkerPosition = new kakao.maps.LatLng(MyLocation.latitude, MyLocation.longitude);
+        // const myMarkerImage = new kakao.maps.MarkerImage(
+        //   myImg,  // 이미지를 import한 변수를 사용
+        //   new kakao.maps.Size(30, 45),
+        //   { offset: new kakao.maps.Point(15, 45) }
+        // );
+        const myMarker = new kakao.maps.Marker({
+          position: myMarkerPosition,
+          // image: myMarkerImage,
+        });
+        myMarker.setMap(map);
+
         data.addresses.forEach(({ latitude, longitude, name, image }) => {
           const markerPosition = new kakao.maps.LatLng(latitude, longitude);
           const markerImage = image ? new kakao.maps.MarkerImage(image, new kakao.maps.Size(50, 50)) : null;
@@ -128,12 +128,15 @@ function App() {
             title: name,
             image: markerImage
           });
-          const markerDistance = distance(MyLocation.latitude, MyLocation.longitude, latitude, longitude);
+          const markerDistance = distance(gps.latitude, gps.longitude, latitude, longitude);
           //  사진이랑 문제 가져오는 부분
           if (markerDistance.toFixed(2) < 0.05 && name !== "내위치" && name !== "imsi 내위치") {
             console.log(`${name} 사진을 찍을 수 있습니다.`);
-            if (result === "yes") {
+            if (question.sign == "no") {
               setIsQuizVisible(true);
+            }
+            else {
+              console.log("사진이 잘못되었습니다");
             }
           }
 
@@ -159,14 +162,10 @@ function App() {
 
     // 최초 한 번 실행
     updateGPSLocation();
-
-    // 주기적으로 위치 업데이트를 위한 setInterval 설정
-    const gpsUpdateInterval = setInterval(updateGPSLocation, 10000);
-
     initializeMap();
 
-    return () => clearInterval(gpsUpdateInterval);
-  }, [MyLocation.latitude, MyLocation.longitude]);
+
+  }, []);
 
   return (
     <div className="App">
